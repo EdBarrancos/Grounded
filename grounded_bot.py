@@ -32,4 +32,4 @@ class Echo(commands.Cog):
 
 myBot.add_cog(Echo())
 myBot.run(TOKEN)
-# keep_alive.keep_alive()
+keep_alive.keep_alive()
