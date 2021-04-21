@@ -1,38 +1,32 @@
 import json
 import random
 import asyncio
-import os
-
-_databaseIDSize = 3
+import sqlite3
+from sqlite3 import Error
 
 
 class DatabaseHandler():
-    def __init__(self, owner):
+    def __init__(self, owner, databaseFile="./databases/database.db"):
         self.owner = owner
-        self.database = f"./databases/database{generateRandomId(_databaseIDSize)}.json"
+        self.connection = self.CreateConnection(databaseFile)
 
-        print(self.database)
+    async def CreateConnection(self, dbFile):
+        conn = None
+        try:
+            conn = sqlite3.connect(dbFile)
+        except Error as e:
+            print(e)
 
-    async def createDatabaseFile(self):
-        f = open(self.database, "x")
-        f.close()
+        return conn
 
-    async def deleteDatabase(self):
-        if os.path.exists(self.database):
-            os.remove(self.database)
+    async def AddServer(self, server):
+        pass
 
+    async def AddChannelToServer(self, server, channel):
+        pass
 
-def generateRandomId(nbrSize: int):
-    if nbrSize < 1:
-        raise Exception("Invalid Database Id")
-    if nbrSize == 1:
-        beg = 0
-        end = 9
-    elif nbrSize == 2:
-        beg = 10
-        end = 99
-    else:
-        beg = 10**nbrSize
-        end = 10**(nbrSize+1) - 1
+    async def RemoveServer(self, server):
+        pass
 
-    return random.randrange(beg, end)
+    async def ChangeChannel(self, server, channel):
+        pass
