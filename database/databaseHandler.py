@@ -1,5 +1,7 @@
 import json
 import random
+import asyncio
+import os
 
 _databaseIDSize = 3
 
@@ -7,9 +9,17 @@ _databaseIDSize = 3
 class DatabaseHandler():
     def __init__(self, owner):
         self.owner = owner
-        self.database = f"database{generateRandomId(_databaseIDSize)}.json"
+        self.database = f"./databases/database{generateRandomId(_databaseIDSize)}.json"
 
         print(self.database)
+
+    async def createDatabaseFile(self):
+        f = open(self.database, "x")
+        f.close()
+
+    async def deleteDatabase(self):
+        if os.path.exists(self.database):
+            os.remove(self.database)
 
 
 def generateRandomId(nbrSize: int):
