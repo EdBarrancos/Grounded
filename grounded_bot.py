@@ -3,6 +3,7 @@ import asyncio
 import discord
 import json
 from discord.ext import commands
+from database.databaseHandler import DatabaseHandler
 
 
 # import Bot Token
@@ -17,6 +18,7 @@ myBot = commands.Bot(('!', '$'))
 async def on_ready():
     print(f'Logged in as {myBot.user.name} (ID: {myBot.user.id})')
     print('-------')
+    databaseHandler = DatabaseHandler(myBot)
 
 
 class Echo(commands.Cog):
