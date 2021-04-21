@@ -28,4 +28,4 @@ myBot.add_cog(Echo())
 
 keep_alive.keep_alive()
 
-myBot.run(os.environ.get('TOKEN'))
+myBot.run(os.getenv('TOKEN'))
