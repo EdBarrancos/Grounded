@@ -10,7 +10,7 @@ class DatabaseHandler():
         self.owner = owner
         self.connection = self.CreateConnection(databaseFile)
 
-    async def CreateConnection(self, dbFile):
+    def CreateConnection(self, dbFile):
         conn = None
         try:
             conn = sqlite3.connect(dbFile)

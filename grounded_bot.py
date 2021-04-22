@@ -6,38 +6,32 @@ from discord.ext import commands
 from database.databaseHandler import DatabaseHandler
 
 
-""" @myBot.event
-async def on_ready():
-    print(f'Logged in as {myBot.user.name} (ID: {myBot.user.id})')
-    print('-------')
-    databaseHandler = DatabaseHandler(myBot) """
-
-
 class Echo(commands.Cog):
     def _init_(self, bot):
         self.bot = bot
+        print("Echo Cog Ready")
 
-    @commands.command()
-    async def echo(self, ctx, message: str):
+    @commands.command(name="echo")
+    async def echo_command(self, ctx, message: str):
         await ctx.send(message)
 
 
 class MyBot(commands.Bot):
     def __init__(self, *args, **kwargs):
-        super.__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         databaseHandler = DatabaseHandler(self)
 
     async def on_ready(self):
         print(f'Logged in as {myBot.user.name} (ID: {myBot.user.id})')
         print('-------')
 
-    async def add_cog(self, cog: commands.Cog):
+    def add_cog(self, cog: commands.Cog):
         super().add_cog(cog)
 
 
 myBot = MyBot(("!", "$"))
 
-myBot.add_cog(Echo())
+myBot.add_cog(Echo(myBot))
 
 keep_alive.keep_alive()
 
