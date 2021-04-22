@@ -5,14 +5,12 @@ import os
 from discord.ext import commands
 from database.databaseHandler import DatabaseHandler
 
-myBot = commands.Bot(('!', '$'))
 
-
-@myBot.event
+""" @myBot.event
 async def on_ready():
     print(f'Logged in as {myBot.user.name} (ID: {myBot.user.id})')
     print('-------')
-    databaseHandler = DatabaseHandler(myBot)
+    databaseHandler = DatabaseHandler(myBot) """
 
 
 class Echo(commands.Cog):
@@ -23,6 +21,21 @@ class Echo(commands.Cog):
     async def echo(self, ctx, message: str):
         await ctx.send(message)
 
+
+class MyBot(commands.Bot):
+    def __init__(self, *args, **kwargs):
+        super.__init__(*args, **kwargs)
+        databaseHandler = DatabaseHandler(self)
+
+    async def on_ready(self):
+        print(f'Logged in as {myBot.user.name} (ID: {myBot.user.id})')
+        print('-------')
+
+    async def add_cog(self, cog: commands.Cog):
+        super().add_cog(cog)
+
+
+myBot = MyBot(("!", "$"))
 
 myBot.add_cog(Echo())
 
