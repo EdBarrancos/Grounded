@@ -5,6 +5,8 @@ import os
 from discord.ext import commands
 from database.databaseHandler import DatabaseHandler
 
+from decouple import config
+
 
 class Echo(commands.Cog):
     def _init_(self, bot):
@@ -33,6 +35,8 @@ myBot = MyBot(("!", "$"))
 
 myBot.add_cog(Echo(myBot))
 
-keep_alive.keep_alive()
+# keep_alive.keep_alive()
 
-myBot.run(os.getenv('TOKEN'))
+# myBot.run(os.getenv('TOKEN'))
+
+myBot.run(config("TOKEN"))
