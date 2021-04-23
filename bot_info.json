@@ -4,7 +4,9 @@
         "Version": 0.1,
         "Dependencies": [
             "discord.py",
-            "Flask"
-        ]
+            "Flask",
+            "sqlite3"
+        ],
+        "Link": "https://discord.com/api/oauth2/authorize?client_id=834230749921148988&permissions=21179472&scope=bot"
     }
 }

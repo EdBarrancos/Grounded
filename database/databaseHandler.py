@@ -1,9 +1,26 @@
-import json
+# Standard Library Imports
 import random
 import asyncio
-import sqlite3
-from sqlite3 import Error
 
+# Third Party Imports
+import sqlite3
+
+# Local Application Imports
+
+#Errors
+class DatabaseError(Exception):
+    """ Base Exception Class For Errors Thrown by DatabaseHandler """
+    def __init__(self, message="Database Error"):
+        self.message = message
+        super(DatabaseError, self).__init__(self.message)
+
+    def __str__(self):
+        return self.message
+
+class ConnectionNotEstablished(DatabaseError):
+    """ Connection Failed to be Established """
+    def __init__(self, message="Connection Failed to be Established"):
+        super(ConnectionNotEstablished, self).__init__(message)
 
 class DatabaseHandler():
     def __init__(self, owner, databaseFile="./databases/database.db"):
@@ -14,8 +31,8 @@ class DatabaseHandler():
         conn = None
         try:
             conn = sqlite3.connect(dbFile)
-        except Error as e:
-            print(e)
+        except sqlite3.Error as e:
+            raise ConnectionNotEstablished(e.__str__())
 
         return conn
 
