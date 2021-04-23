@@ -21,7 +21,7 @@ class Echo(commands.Cog):
 class MyBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        databaseHandler = DatabaseHandler(self)
+        self.databaseHandler = DatabaseHandler(self)
 
     async def on_ready(self):
         print(f'Logged in as {myBot.user.name} (ID: {myBot.user.id})')

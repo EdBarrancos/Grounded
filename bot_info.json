@@ -1,0 +1,10 @@
+{
+    "Grounded": {
+        "Author": "Eduardo Barrancos",
+        "Version": 0.1,
+        "Dependencies": [
+            "discord.py",
+            "Flask"
+        ]
+    }
+}
