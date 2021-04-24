@@ -5,7 +5,7 @@ import os
 # Third Party Imports
 import discord
 from discord.ext import commands
-
+import logging
 from decouple import config
 
 # Local Application Imports
@@ -25,9 +25,12 @@ class MyBot(commands.Bot):
         print('-------')
 
         try:
+            print("Database Initializing...")
             self.databaseHandler = DatabaseHandler(self)
         except databaseHandler.DatabaseError as e:
             print(e)
+        else:
+            print("Success")
 
         self.cogHandler = CogHandler(self)
         await self.cogHandler.addCogs()
