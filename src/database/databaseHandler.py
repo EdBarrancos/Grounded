@@ -35,6 +35,11 @@ class CommitToDatabaseFailed(databaseExceptions.DatabaseException):
     """ Failed to Commit to Database """
     def __init__(self, message="Failed to Commit to Database"):
         super(CommitToDatabaseFailed, self).__init__(message)
+
+class GuildNotRemoved(databaseExceptions.DatabaseException):
+    """ Failed to Remove Guild from Database """
+    def __init__(self, message="Failed to Remove Guild From Database"):
+        super(GuildNotRemoved, self).__init__(message)
         
 
 class DatabaseHandler():
@@ -143,5 +148,16 @@ class DatabaseHandler():
         return
 
 
-    async def RemoveServer(self, server):
-        pass
+    async def RemoveGuild(self, guildId):
+        sql = """ DELETE FROM guilds WHERE guild_id = ? """
+        try:
+            await self.CommitToDatabase(sql, (guildId,))
+        except CommitToDatabaseFailed as e:
+            raise GuildNotRemoved(message=e.__str__())
+        except:
+            raise GuildNotRemoved()
+
+        logging.debug("Guild Removed from Database")
+
+        return
+
