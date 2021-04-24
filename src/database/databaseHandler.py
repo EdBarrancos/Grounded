@@ -20,6 +20,21 @@ class TableNotCreated(databaseExceptions.DatabaseException):
     """ Failed to Create a Table in the Database """
     def __init__(self, message="Table Failed to be Created"):
         super(TableNotCreated, self).__init__(message)
+
+class GuildNotAdded(databaseExceptions.DatabaseException):
+    """ Failed to Add Guild to Database """
+    def __init__(self, message="Failed to Store Guild to Database"):
+        super(GuildNotAdded, self).__init__(message)
+
+class GuildNotUpdated(databaseExceptions.DatabaseException):
+    """ Failed to Update Guild in Database """
+    def __init__(self, message="Failed to Update Guild in Database"):
+        super(GuildNotUpdated, self).__init__(message)
+
+class CommitToDatabaseFailed(databaseExceptions.DatabaseException):
+    """ Failed to Commit to Database """
+    def __init__(self, message="Failed to Commit to Database"):
+        super(CommitToDatabaseFailed, self).__init__(message)
         
 
 class DatabaseHandler():
@@ -39,9 +54,10 @@ class DatabaseHandler():
         self.connection = self.CreateConnection(databaseFile)
 
         #Error Checking
-        
         if self.connection is None: raise ConnectionNotEstablished("Failed to establish database connection")
+
         self.CreateTable(self.sqlCreateGuildTable)
+
 
     def CreateConnection(self, dbFile):
         logging.info("Database Connection Initializing ...")
@@ -50,11 +66,12 @@ class DatabaseHandler():
         try:
             conn = sqlite3.connect(dbFile)
         except sqlite3.Error as e:
-            raise ConnectionNotEstablished(e.__str__())
+            raise ConnectionNotEstablished(message=e.__str__())
 
         logging.info("Database Connection Initialized Successfully")
 
         return conn
+
 
     def CreateTable(self, createTableStatement):
         logging.info("Database Table Initializing...")
@@ -63,23 +80,41 @@ class DatabaseHandler():
             cur = self.connection.cursor()
             cur.execute(createTableStatement)
         except sqlite3.Error as e:
-            raise TableNotCreated(e.__str__())
+            raise TableNotCreated(message=e.__str__())
 
         logging.info("Database Table Initialized Successfully")
 
         return
 
-    async def AddGuildToDatabase(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelid=None, roleId=None):
+    
+    async def CommitToDatabase(self, sql, toCommit):
+        with self.connection:
+            try:
+                cur = self.connection.cursor()
+                cur.execute(sql, toCommit)
+                self.connection.commit()
+            except:
+                raise CommitToDatabaseFailed()
+
+            return cur.lastrowid
+
+
+    async def AddNewGuild(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelid=None, roleId=None):
         sql = """ INSERT INTO guilds(guild_id, name, owner_id, text_channel_id, voice_channel_id, role_id)
               VALUES(?,?,?,?,?,?)"""
-        with self.connection:
-            cur = self.connection.cursor()
-            await cur.execute(sql, self.CreateNewGuild(guildId, guildName, ownerId, textChannelId, voiceChannelid, roleId))
-            
-            self.connection.commit()
 
-            logging.debug("Guild Added to Database")
-            return cur.lastrowid
+        try:
+            guild = await self.CreateNewGuild(guildId, guildName, ownerId, textChannelId, voiceChannelid, roleId)
+            lstId = await self.CommitToDatabase(sql, guild)
+        except CommitToDatabaseFailed as e:
+            raise GuildNotAdded(message=e.__str__())
+        except:
+            raise GuildNotAdded()
+        
+        logging.debug("Guild Added to Database")
+
+        return lstId
+
 
     async def CreateNewGuild(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelId=None, roleId=None):
         guild = (guildId, guildName, ownerId, textChannelId. voiceChannelId, roleId)
@@ -88,23 +123,25 @@ class DatabaseHandler():
         logging.debug(f'New Guild Created Name: {guildName} and Id: {guildId}')
         return guild
 
+
     async def UpdateGuild(self, guildId, textChannelId=None, voiceChannelId=None, roleId=None):
         sql = """ UPDATE guilds
                     SET text_channel_id = ?,
                         voice_channel_id = ?,
                         role_id = ?
                     WHERE guild_id = ?"""
-        
-        with self.connection:
-            cur = self.connection.cursor()
-            cur.execute(sql, (textChannelId, voiceChannelId, roleId, guildId))
-            self.connection.commit()
 
-            logging.debug("Guild Updated in Database")
+        try:
+            await self.CommitToDatabase(sql, (textChannelId, voiceChannelId, roleId, guildId))
+        except CommitToDatabaseFailed as e:
+            raise GuildNotUpdated(message=e.__str__())
+        except:
+            raise GuildNotUpdated()
 
-            return
+        logging.debug("Guild Updated in Database")
 
-        pass
+        return
+
 
     async def RemoveServer(self, server):
         pass
