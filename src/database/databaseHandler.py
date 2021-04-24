@@ -19,14 +19,15 @@ class ConnectionNotEstablished(databaseExceptions.DatabaseException):
 class TableNotCreated(databaseExceptions.DatabaseException):
     """ Failed to Create a Table in the Database """
     def __init__(self, message="Table Failed to be Created"):
-        spuer(TableNotCreated, self).__init__(message)
+        super(TableNotCreated, self).__init__(message)
         
 
 class DatabaseHandler():
     def __init__(self, owner, databaseFile="./databases/database.db"):
         self.owner = owner
-        self.sqlCreateServerTable = """CREATE TABLE IF NOT EXISTS server (
+        self.sqlCreateGuildTable = """CREATE TABLE IF NOT EXISTS guild (
                                             id integer PRIMARY KEY,
+                                            guild_id integer NOT NULL,
                                             name text NOT NULL,
                                             owner_id integer NOT NULL,
                                             text_channel_id integer,
@@ -39,7 +40,7 @@ class DatabaseHandler():
         #Error Checking
         
         if self.connection is None: raise ConnectionNotEstablished("Failed to establish database connection")
-        self.CreateTable(self.sqlCreateServerTable)
+        self.CreateTable(self.sqlCreateGuildTable)
 
     def CreateConnection(self, dbFile):
         logging.info("Database Connection Initializing ...")
