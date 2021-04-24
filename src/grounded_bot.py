@@ -1,39 +1,62 @@
 # Standard Library Imports
 import asyncio
-import os
 
 # Third Party Imports
 import discord
 from discord.ext import commands
 import logging
-from decouple import config
 
 # Local Application Imports
 import database.databaseHandler as databaseHandler
 import cog.cogs as cogs
 from database.databaseHandler import DatabaseHandler
 from cog.cogs import CogHandler
-import keep_alive
 
 
 class MyBot(commands.Bot):
     def __init__(self, *args, **kwargs):
+        logging.info("Intializing Bot...")
         super().__init__(*args, **kwargs)
+        logging.info("Bot Initialized Successfully")
 
     async def on_ready(self):
-        print(f'Logged in as {myBot.user.name} (ID: {myBot.user.id})')
+        print(f'Logged in as {self.user.name} (ID: {self.user.id})')
         print('-------')
 
+        print("Initializing Handlers")
+
         try:
-            print("Database Initializing...")
+            logging.info("Database Handler Initializing...")
             self.databaseHandler = DatabaseHandler(self)
         except databaseHandler.DatabaseError as e:
-            print(e)
+            logging.error(e)
+            raise
+        except:
+            raise
         else:
-            print("Success")
+            logging.info("Database Handler Initialized Successfully")
 
-        self.cogHandler = CogHandler(self)
-        await self.cogHandler.addCogs()
+        try:
+            logging.info("Cog Handler Initializing...")
+            self.cogHandler = CogHandler(self)
+        except:
+            raise
+        else:
+            logging.info("Cog Handler Initialized Successfully")
+
+        try:
+            logging.info("Loading Cogs...")
+            await self.cogHandler.addCogs()
+        except:
+            raise
+        else:
+            logging.info("Cogs Loaded Successfully")
+
+        print("Handlers Initialized")
+        print('-------')
+
+        return
+
 
     async def on_guild_join(self, guild):
         self.databaseHandler.AddServer(guild)
@@ -43,12 +66,3 @@ class MyBot(commands.Bot):
 
     def add_cog(self, cog: commands.Cog):
         super().add_cog(cog)
-
-logging.basicConfig(format='%(levelname)s:%(message)s', filename="bot_logs/grounded_bot.log", level=logging.DEBUG, filemode="w")
-myBot = MyBot(("!", "$"))
-
-# keep_alive.keep_alive()
-
-# myBot.run(os.getenv('TOKEN'))
-
-myBot.run(config("TOKEN"))
