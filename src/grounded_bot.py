@@ -44,7 +44,7 @@ class MyBot(commands.Bot):
     def add_cog(self, cog: commands.Cog):
         super().add_cog(cog)
 
-
+logging.basicConfig(format='%(levelname)s:%(message)s', filename="bot_logs/grounded_bot.log", level=logging.DEBUG, filemode="w")
 myBot = MyBot(("!", "$"))
 
 # keep_alive.keep_alive()
