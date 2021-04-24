@@ -1,7 +1,8 @@
 {
     "Grounded": {
         "Author": "Eduardo Barrancos",
-        "Version": 0.1,
+        "WorkingVersion": 0.0,
+        "InProgressVersion": 0.1,
         "Dependencies": [
             "discord.py",
             "Flask",
