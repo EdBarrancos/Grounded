@@ -92,11 +92,12 @@ class DatabaseHandler():
         return
 
     
-    async def CommitToDatabase(self, sql, toCommit):
+    async def CommitToDatabase(self, sql, toCommit=None):
         with self.connection:
             try:
                 cur = self.connection.cursor()
-                cur.execute(sql, toCommit)
+                if toCommit is None: cur.execute(sql)
+                else: cur.execute(sql, toCommit)
                 self.connection.commit()
             except:
                 raise CommitToDatabaseFailed()
@@ -159,5 +160,18 @@ class DatabaseHandler():
 
         logging.debug("Guild Removed from Database")
 
+        return
+
+    async def RemoveAllGuilds(self):
+        sql = """ DELETE FROM guilds """
+        try:
+            await self.CommitToDatabase(sql)
+        except CommitToDatabaseFailed as e:
+            raise GuildNotRemoved(message=e.__str__())
+        except:
+            raise GuildNotRemoved(message="Failed to Remove All Guilds From Database")
+
+        logging.debug("All Guilds Removed from Database")
+        
         return
 
