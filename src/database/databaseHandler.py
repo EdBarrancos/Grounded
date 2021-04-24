@@ -25,13 +25,14 @@ class TableNotCreated(databaseExceptions.DatabaseException):
 class DatabaseHandler():
     def __init__(self, owner, databaseFile="./databases/database.db"):
         self.owner = owner
-        self.sqlCreateGuildTable = """CREATE TABLE IF NOT EXISTS guild (
+        self.sqlCreateGuildTable = """CREATE TABLE IF NOT EXISTS guilds (
                                             id integer PRIMARY KEY,
                                             guild_id integer NOT NULL,
                                             name text NOT NULL,
                                             owner_id integer NOT NULL,
                                             text_channel_id integer,
-                                            voice_channel_id integer                                            
+                                            voice_channel_id integer,
+                                            role_id integer                                           
                                         );  """
 
 
@@ -59,25 +60,27 @@ class DatabaseHandler():
         logging.info("Database Table Initializing...")
 
         try:
-            c = self.connection.cursor()
-            c.execute(createTableStatement)
+            cur = self.connection.cursor()
+            cur.execute(createTableStatement)
         except sqlite3.Error as e:
             raise TableNotCreated(e.__str__())
 
         logging.info("Database Table Initialized Successfully")
 
         return
-    
-    
 
-    async def AddServer(self, server):
-        pass
+    async def AddGuildToDatabase(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelid=None, roleId=None):
+        sql = """ INSERT INTO guilds(guild_id, name, owner_id, text_channel_id, voice_channel_id, role_id)
+              VALUES(?,?,?,?,?,?)"""
+        with self.connection:
+            cur = self.connection.cursor()
+            cur.execute(sql, self.CreateNewGuild(guildId, guildName, ownerId, textChannelId, voiceChannelid, roleId))
+            self.connection.commit()
+            return cur.lastrowid
 
-    async def AddChannelToServer(self, server, channel):
-        pass
+    async def CreateNewGuild(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelid=None, roleId=None):
+        guild = (guildId, guildName, ownerId, textChannelId. voiceChannelid, roleId)
+        return guild
 
     async def RemoveServer(self, server):
-        pass
-
-    async def ChangeChannel(self, server, channel):
         pass
