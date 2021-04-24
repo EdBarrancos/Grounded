@@ -74,13 +74,37 @@ class DatabaseHandler():
               VALUES(?,?,?,?,?,?)"""
         with self.connection:
             cur = self.connection.cursor()
-            cur.execute(sql, self.CreateNewGuild(guildId, guildName, ownerId, textChannelId, voiceChannelid, roleId))
+            await cur.execute(sql, self.CreateNewGuild(guildId, guildName, ownerId, textChannelId, voiceChannelid, roleId))
+            
             self.connection.commit()
+
+            logging.debug("Guild Added to Database")
             return cur.lastrowid
 
-    async def CreateNewGuild(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelid=None, roleId=None):
-        guild = (guildId, guildName, ownerId, textChannelId. voiceChannelid, roleId)
+    async def CreateNewGuild(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelId=None, roleId=None):
+        guild = (guildId, guildName, ownerId, textChannelId. voiceChannelId, roleId)
+
+        logging.info("Create New Guild")
+        logging.debug(f'New Guild Created Name: {guildName} and Id: {guildId}')
         return guild
+
+    async def UpdateGuild(self, guildId, textChannelId=None, voiceChannelId=None, roleId=None):
+        sql = """ UPDATE guilds
+                    SET text_channel_id = ?,
+                        voice_channel_id = ?,
+                        role_id = ?
+                    WHERE guild_id = ?"""
+        
+        with self.connection:
+            cur = self.connection.cursor()
+            cur.execute(sql, (textChannelId, voiceChannelId, roleId, guildId))
+            self.connection.commit()
+
+            logging.debug("Guild Updated in Database")
+
+            return
+
+        pass
 
     async def RemoveServer(self, server):
         pass
