@@ -56,7 +56,7 @@ Just make sure u find a cool nickname to identify your plans
 
 ### To be Implemented By Yours Trully
 
--> help command
+-> custom help command
 
 -> Command to mute and unmute bad and good behaved users, respectively
 
