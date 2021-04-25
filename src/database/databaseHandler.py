@@ -132,21 +132,30 @@ class DatabaseHandler():
 
 
     async def UpdateGuild(self, guildId, textChannelId=None, voiceChannelId=None, roleId=None):
-        sql = """ UPDATE guilds
-                    SET text_channel_id = ?,
-                        voice_channel_id = ?,
-                        role_id = ?
-                    WHERE guild_id = ?"""
-
         try:
-            await self.CommitToDatabase(sql, (textChannelId, voiceChannelId, roleId, guildId))
-        except CommitToDatabaseFailed as e:
+            if textChannelId != None: await self.UpdateGuildTextChannel(guildId, textChannelId)
+        except GuildNotUpdated as e:
             raise GuildNotUpdated(message=e.__str__())
         except:
             raise GuildNotUpdated()
 
         logging.debug("Guild Updated in Database")
 
+        return
+
+
+    async def UpdateGuildTextChannel(self, guildId, textChannelId):
+        sql = """ UPDATE guilds
+                    SET text_channel_id = ?
+                    WHERE guild_id = ? """
+        try:
+            await self.CommitToDatabase(sql, (textChannelId, guildId))
+        except CommitToDatabaseFailed as e:
+            raise GuildNotUpdated(message=e.__str__())
+        except:
+            raise GuildNotUpdated()
+
+        logging.debug("Guild textChannel Updated")
         return
 
 
