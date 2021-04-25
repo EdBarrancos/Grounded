@@ -1,0 +1,2 @@
+Got to improve updateGuild in databasehandler
+Need to document code
