@@ -54,15 +54,18 @@ class MyBot(commands.Bot):
 
         print("Handlers Initialized")
         print('-------')
+        
+        await self.databaseHandler.RemoveAllGuilds()
+        await self.databaseHandler.DoesGuildExit(self.guilds[0].id)
 
         return
 
 
     async def on_guild_join(self, guild):
-        self.databaseHandler.AddServer(guild)
+        pass
 
     async def on_guild_remove(self, guild):
-        self.databaseHandler.RemoveServer(guild)
+        pass
 
     def add_cog(self, cog: commands.Cog):
         super().add_cog(cog)

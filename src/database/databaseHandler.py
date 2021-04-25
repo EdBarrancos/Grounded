@@ -92,17 +92,18 @@ class DatabaseHandler():
         return
 
     
-    async def CommitToDatabase(self, sql, toCommit=None):
+    async def CommitToDatabase(self, sql, toBeCommitted=None, toCommit=True):
         with self.connection:
             try:
                 cur = self.connection.cursor()
-                if toCommit is None: cur.execute(sql)
-                else: cur.execute(sql, toCommit)
-                self.connection.commit()
+                if toBeCommitted is None: cur.execute(sql)
+                else: cur.execute(sql, toBeCommitted)
+                
+                if toCommit: self.connection.commit()
             except:
                 raise CommitToDatabaseFailed()
 
-            return cur.lastrowid
+            return cur
 
 
     async def AddNewGuild(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelid=None, roleId=None):
@@ -175,3 +176,8 @@ class DatabaseHandler():
         
         return
 
+    async def DoesGuildExit(self, guildId):
+        sql = """ SELECT name FROM guilds WHERE guild_id = ? """
+        cursor = await self.CommitToDatabase(sql, (guildId, ))
+
+        return len(cursor.fetchall()) == 0
