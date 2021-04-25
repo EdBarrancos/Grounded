@@ -7,8 +7,7 @@ from discord.ext import commands
 import logging
 
 # Local Application Imports
-import database.databaseHandler as databaseHandler
-import cog.cogs as cogs
+import exceptions
 from database.databaseHandler import DatabaseHandler
 from cog.cogs import CogHandler
 
@@ -19,6 +18,7 @@ class MyBot(commands.Bot):
         super().__init__(*args, **kwargs)
         logging.info("Bot Initialized Successfully")
 
+
     async def on_ready(self):
         print(f'Logged in as {self.user.name} (ID: {self.user.id})')
         print('-------')
@@ -28,7 +28,7 @@ class MyBot(commands.Bot):
         try:
             logging.info("Database Handler Initializing...")
             self.databaseHandler = DatabaseHandler(self)
-        except databaseHandler.DatabaseError as e:
+        except exceptions.databaseExceptions.DatabaseException as e:
             logging.error(e)
             raise
         except:
@@ -54,18 +54,29 @@ class MyBot(commands.Bot):
 
         print("Handlers Initialized")
         print('-------')
-        
-        await self.databaseHandler.RemoveAllGuilds()
-        await self.databaseHandler.DoesGuildExit(self.guilds[0].id)
 
         return
 
 
     async def on_guild_join(self, guild):
-        pass
+        try:
+            self.databaseHandler.AddNewGuild(guild.id, guild.name, guild.owner_id)
+        except exceptions.databaseExceptions.DatabaseException as e:
+            logging.error(e)
+            raise
+        except:
+            raise
+
 
     async def on_guild_remove(self, guild):
-        pass
+        try:
+            self.databaseHandler.RemoveGuild(guild.id)
+        except exceptions.databaseExceptions.DatabaseException as e:
+            logging.error(e)
+            raise
+        except:
+            raise
+
 
     def add_cog(self, cog: commands.Cog):
         super().add_cog(cog)
