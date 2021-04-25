@@ -52,11 +52,11 @@ Just make sure u find a cool nickname to identify your plans
 
 -> Echo Command
 
+-> Database that stores current guilds
+
 ### To be Implemented By Yours Trully
 
 -> help command
-
--> Database that stores current guilds
 
 -> Command to mute and unmute bad and good behaved users, respectively
 
