@@ -112,7 +112,7 @@ class DatabaseHandler():
 
         try:
             guild = await self.CreateNewGuild(guildId, guildName, ownerId, textChannelId, voiceChannelid, roleId)
-            lstId = await self.CommitToDatabase(sql, guild)
+            lstId = await self.CommitToDatabase(sql, guild).lastrowid
         except CommitToDatabaseFailed as e:
             raise GuildNotAdded(message=e.__str__())
         except:
@@ -163,6 +163,7 @@ class DatabaseHandler():
 
         return
 
+
     async def RemoveAllGuilds(self):
         sql = """ DELETE FROM guilds """
         try:
@@ -176,8 +177,21 @@ class DatabaseHandler():
         
         return
 
+
     async def DoesGuildExit(self, guildId):
         sql = """ SELECT name FROM guilds WHERE guild_id = ? """
         cursor = await self.CommitToDatabase(sql, (guildId, ))
 
         return len(cursor.fetchall()) == 0
+
+    
+    async def AddGuild(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelId=None, roleId=None):
+        if not await self.DoesGuildExit(guildId):
+            logging.debug(f'Guild {guildName} Does not exist in database')
+            try:
+                id = self.AddNewGuild(guildId, guildName, ownerId, textChannelId, voiceChannelId, roleId)
+            except:
+                raise
+            
+            logging.debug(f'Guild {guildName} added to database successfully')
+            return id
