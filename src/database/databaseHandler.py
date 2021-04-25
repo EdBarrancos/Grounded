@@ -106,13 +106,13 @@ class DatabaseHandler():
             return cur
 
 
-    async def AddNewGuild(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelid=None, roleId=None):
+    async def AddNewGuild(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelId=None, roleId=None):
         sql = """ INSERT INTO guilds(guild_id, name, owner_id, text_channel_id, voice_channel_id, role_id)
               VALUES(?,?,?,?,?,?)"""
 
         try:
-            guild = await self.CreateNewGuild(guildId, guildName, ownerId, textChannelId, voiceChannelid, roleId)
-            lstId = await self.CommitToDatabase(sql, guild).lastrowid
+            guild = await self.CreateNewGuild(guildId, guildName, ownerId, textChannelId, voiceChannelId, roleId)
+            cursor = await self.CommitToDatabase(sql, guild)
         except CommitToDatabaseFailed as e:
             raise GuildNotAdded(message=e.__str__())
         except:
@@ -120,11 +120,11 @@ class DatabaseHandler():
         
         logging.debug("Guild Added to Database")
 
-        return lstId
+        return cursor.lastrowid
 
 
     async def CreateNewGuild(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelId=None, roleId=None):
-        guild = (guildId, guildName, ownerId, textChannelId. voiceChannelId, roleId)
+        guild = (guildId, guildName, ownerId, textChannelId, voiceChannelId, roleId)
 
         logging.info("Create New Guild")
         logging.debug(f'New Guild Created Name: {guildName} and Id: {guildId}')
@@ -182,16 +182,18 @@ class DatabaseHandler():
         sql = """ SELECT name FROM guilds WHERE guild_id = ? """
         cursor = await self.CommitToDatabase(sql, (guildId, ))
 
-        return len(cursor.fetchall()) == 0
+        return len(cursor.fetchall()) != 0
 
     
     async def AddGuild(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelId=None, roleId=None):
         if not await self.DoesGuildExit(guildId):
             logging.debug(f'Guild {guildName} Does not exist in database')
             try:
-                id = self.AddNewGuild(guildId, guildName, ownerId, textChannelId, voiceChannelId, roleId)
+                id = await self.AddNewGuild(guildId, guildName, ownerId, textChannelId, voiceChannelId, roleId)
             except:
                 raise
             
             logging.debug(f'Guild {guildName} added to database successfully')
             return id
+        else:
+            logging.debug(f'Guild {guildName} Does exist')

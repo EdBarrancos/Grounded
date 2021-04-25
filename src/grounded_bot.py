@@ -55,12 +55,32 @@ class MyBot(commands.Bot):
         print("Handlers Initialized")
         print('-------')
 
+        #await self.databaseHandler.RemoveAllGuilds()
+        await self.UpdateGuildDatabase()
+        #await self.UpdateGuildDatabase()
+
         return
 
 
+    async def UpdateGuildDatabase(self):
+        logging.info("Updating Database")
+        for guild in self.guilds:
+            try:
+                await self.databaseHandler.AddGuild(guild.id, guild.name, guild.owner_id)
+            except exceptions.databaseExceptions.DatabaseException as e:
+                logging.error(e)
+                raise
+            except:
+                raise
+
+        logging.info("Updated")
+
+
     async def on_guild_join(self, guild):
+        logging.info(f'Guild {guild.name} joined')
+
         try:
-            self.databaseHandler.AddNewGuild(guild.id, guild.name, guild.owner_id)
+            await self.databaseHandler.AddNewGuild(guild.id, guild.name, guild.owner_id)
         except exceptions.databaseExceptions.DatabaseException as e:
             logging.error(e)
             raise
@@ -69,8 +89,10 @@ class MyBot(commands.Bot):
 
 
     async def on_guild_remove(self, guild):
+        logging.info(f'Guild {guild.name} left')
+
         try:
-            self.databaseHandler.RemoveGuild(guild.id)
+            await self.databaseHandler.RemoveGuild(guild.id)
         except exceptions.databaseExceptions.DatabaseException as e:
             logging.error(e)
             raise
