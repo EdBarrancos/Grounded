@@ -3,6 +3,7 @@
 # Third Party Imports
 import discord
 from discord.ext import commands
+import logging
 
 # Local Application Imports
 
@@ -12,9 +13,9 @@ helpMessage = "I'll repeat Whatever You want me to, but just one word, So watcho
 briefMessage = "I'll repeat one word"
 
 class Echo(commands.Cog):
-    def _init_(self, bot):
-        self.bot = bot
-        print("Echo Cog Ready")
+    def _init_(self, handler):
+        self.handler = handler
+        logging.info("Echo Cog Ready")
 
     @commands.command(name=name, aliases=aliases, help=helpMessage,brief=briefMessage)
     async def echo_command(self, ctx, message: str):

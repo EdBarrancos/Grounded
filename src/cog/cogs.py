@@ -6,6 +6,7 @@ from discord.ext import commands
 
 # Local Application Imports
 from .echo import Echo
+from .grounded_channels import GrChannels
 
 
 class CogHandler():
@@ -14,3 +15,4 @@ class CogHandler():
 
     async def addCogs(self):
         self.owner.add_cog(Echo(self))
+        self.owner.add_cog(GrChannels(self))
