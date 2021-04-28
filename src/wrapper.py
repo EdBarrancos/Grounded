@@ -9,11 +9,23 @@
 
 
 class Wrapper():
-    async def BoldWrapper(self, message):
+    def BoldWrapper(self, message):
         return f'**{message}**'
 
-    async def UpperWrapper(self, message):
+    def UpperWrapper(self, message):
         return message.upper()
 
-    async def ItalicWrapper(self, message):
+    def ItalicWrapper(self, message):
         return f'*{message}*'
+
+    def AllAngryWrapper(self, message):
+        return f'{self.BoldWrapper(self.ItalicWrapper(self.UpperWrapper(message+"!")))}'
+    
+    def CodeWrapper(self, message):
+        return f'`{message}`'
+
+    def CodeBlockWrapper(self, message):
+        return f'```{message}```'
+
+    def BackQuoteWrapper(self, message):
+        return f'> {message}'

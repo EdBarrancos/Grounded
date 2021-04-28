@@ -6,7 +6,7 @@ from discord.ext import commands
 import logging
 
 #Local Application Imports
-
+import wrapper
 
 #defineV
 nameDV = "defineV"
@@ -26,6 +26,7 @@ briefMessageGV = "Get the Grounded Voice Channel"
 class GrChannels(commands.Cog):
     def __init__(self, handler):
         self.handler = handler
+        self.wrapper = wrapper.Wrapper()
         logging.info("GrChannels Initialized")
 
     @commands.command(name=nameDV, aliases=aliasesDV, help=helpMessageDV, brief=briefMessageDV)
@@ -41,5 +42,5 @@ class GrChannels(commands.Cog):
     @commands.command(name=nameGV, aliases=aliasesGV, help=helpMessageGV, brief=briefMessageGV)
     async def getV_channel(self, ctx):
         voiceChannelId = await self.handler.owner.databaseHandler.GetGuildVoiceChannelId(ctx.guild.id)
-        await ctx.send(f'This Server\'s Grounded channel is the *{ctx.guild.get_channel(voiceChannelId).name}* channel!')
-        await ctx.send(f'**Any problem With that????**')
+        await ctx.send(f'This Server\'s Grounded channel is the {self.wrapper.CodeWrapper(ctx.guild.get_channel(voiceChannelId).name)} channel!')
+        await ctx.send(f'{self.wrapper.BoldWrapper("Any problem With that????")}')

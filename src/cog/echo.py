@@ -21,5 +21,5 @@ class Echo(commands.Cog):
 
     @commands.command(name=name, aliases=aliases, help=helpMessage,brief=briefMessage)
     async def echo_command(self, ctx, *, message: str):
-        finalMessage = await self.wrapper.BoldWrapper(await self.wrapper.ItalicWrapper(await self.wrapper.UpperWrapper(message)))
-        await ctx.send(f'> {finalMessage}!')
+        finalMessage = self.wrapper.AllAngryWrapper(message+'!')
+        await ctx.send(f'{self.wrapper.BackQuoteWrapper(finalMessage)}')
