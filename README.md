@@ -6,15 +6,15 @@ Jokes, Just a fun little Project
 
 ## Usage
 
-[Get the Link in this Link, inception I know](bot_info.json)
+[Get the Link in this Link. Inception, I know](bot_info.json)
 
 Copy Paste it into your browser
 
-Select the server You want those bad behaved users to ***KNOW WHOSE BOSS***
+Select the server when  those bad behaved users need to ***KNOW WHOSE BOSS***
 
 And Done, I promise I want hack your server or anything, the bot is actually very **good behaved** ;)
 
-If the bot isn't online when u do this, *Im so sorry*, Ill try to fix it
+If the bot isn't online when u do this, *Im so sorry*, I'll try to fix it
 
 ## Contributing
 
