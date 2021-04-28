@@ -31,9 +31,15 @@ class GrChannels(commands.Cog):
     @commands.command(name=nameDV, aliases=aliasesDV, help=helpMessageDV, brief=briefMessageDV)
     async def defineV_channel(self, ctx, channel_name: str):
         channel = discord.utils.get(ctx.guild.voice_channels, name=channel_name)
+        if channel == None:
+            await ctx.send(f'No such Channel!')
+            return
+            
         await self.handler.owner.databaseHandler.UpdateGuild(ctx.guild.id, voiceChannelId=channel.id)
     
 
     @commands.command(name=nameGV, aliases=aliasesGV, help=helpMessageGV, brief=briefMessageGV)
     async def getV_channel(self, ctx):
-        await self.handler.owner.databaseHandler.GetGuild(ctx.guild.id)
+        voiceChannelId = await self.handler.owner.databaseHandler.GetGuildVoiceChannelId(ctx.guild.id)
+        await ctx.send(f'This Server\'s Grounded channel is the *{ctx.guild.get_channel(voiceChannelId).name}* channel!')
+        await ctx.send(f'**Any problem With that????**')
