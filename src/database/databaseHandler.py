@@ -255,10 +255,16 @@ class DatabaseHandler():
         
         rows = cursor.fetchall()
 
-        #guild = dict()
+        guild = dict()
 
         for row in rows:
-            print(row)
+            guild['name'] = row[0]
+            guild['ownerId'] = row[1]
+            guild['textChannelId'] = row[2]
+            guild['voiceChannelId'] = row[3]
+            guild['roleChannelId'] = row[4]
+
+        return guild
 
 
     async def GetGuildName(self, guildId):
