@@ -76,6 +76,8 @@ Just make sure u find a cool nickname to identify your plans
 
 -> Gamify The Bot
 
+-> Permissions for certain commands
+
 ## About Me
 
 Hello I'm Yours Trully, Or Eduardo Barrancos, I'm a college student who has fun doing little projects like this one :)

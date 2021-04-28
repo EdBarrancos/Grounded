@@ -18,5 +18,5 @@ class Echo(commands.Cog):
         logging.info("Echo Cog Ready")
 
     @commands.command(name=name, aliases=aliases, help=helpMessage,brief=briefMessage)
-    async def echo_command(self, ctx, message: str):
-        await ctx.send(f'{message}!')
+    async def echo_command(self, ctx, *, message: str):
+        await ctx.send(f'>{message}!')
