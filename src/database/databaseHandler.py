@@ -268,16 +268,82 @@ class DatabaseHandler():
 
 
     async def GetGuildName(self, guildId):
-        pass
+        sql = """ SELECT name FROM guilds WHERE guild_id = ? """
+        if not await self.DoesGuildExit(guildId): raise GuildNonExistant()
+
+        logging.debug(f'Guild {guildId} exists in the Database')
+
+        try:
+            cursor = await self.CommitToDatabase(sql, (guildId, ), False)
+        except:
+            raise
+        
+        rows = cursor.fetchall()
+
+        for row in rows:
+            return row[0]
+
 
     async def GetGuildOwnerId(self, guildId):
-        pass
+        sql = """ SELECT owner_id FROM guilds WHERE guild_id = ? """
+        if not await self.DoesGuildExit(guildId): raise GuildNonExistant()
+
+        logging.debug(f'Guild {guildId} exists in the Database')
+
+        try:
+            cursor = await self.CommitToDatabase(sql, (guildId, ), False)
+        except:
+            raise
+        
+        rows = cursor.fetchall()
+
+        for row in rows:
+            return row[0]
 
     async def GetGuildTextChannelId(self, guildId):
-        pass
+        sql = """ SELECT text_channel_id FROM guilds WHERE guild_id = ? """
+        if not await self.DoesGuildExit(guildId): raise GuildNonExistant()
+
+        logging.debug(f'Guild {guildId} exists in the Database')
+
+        try:
+            cursor = await self.CommitToDatabase(sql, (guildId, ), False)
+        except:
+            raise
+        
+        rows = cursor.fetchall()
+
+        for row in rows:
+            return row[0]
 
     async def GetGuildVoiceChannelId(self, guildId):
-        pass
+        sql = """ SELECT voice_channel_id FROM guilds WHERE guild_id = ? """
+        if not await self.DoesGuildExit(guildId): raise GuildNonExistant()
+
+        logging.debug(f'Guild {guildId} exists in the Database')
+
+        try:
+            cursor = await self.CommitToDatabase(sql, (guildId, ), False)
+        except:
+            raise
+        
+        rows = cursor.fetchall()
+
+        for row in rows:
+            return row[0]
 
     async def GetGuildRoleId(self, guildId):
-        pass
+        sql = """ SELECT role_id FROM guilds WHERE guild_id = ? """
+        if not await self.DoesGuildExit(guildId): raise GuildNonExistant()
+
+        logging.debug(f'Guild {guildId} exists in the Database')
+
+        try:
+            cursor = await self.CommitToDatabase(sql, (guildId, ), False)
+        except:
+            raise
+        
+        rows = cursor.fetchall()
+
+        for row in rows:
+            return row[0]
