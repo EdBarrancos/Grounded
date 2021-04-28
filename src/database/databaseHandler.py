@@ -139,6 +139,8 @@ class DatabaseHandler():
     async def UpdateGuild(self, guildId, textChannelId=None, voiceChannelId=None, roleId=None):
         try:
             if textChannelId != None: await self.UpdateGuildTextChannel(guildId, textChannelId)
+            if voiceChannelId != None: await self.UpdateGuildVoiceChannel(guildId, voiceChannelId)
+            if roleId != None: await self.UpdateGuildRole(guildId, roleId)
         except GuildNotUpdated as e:
             raise GuildNotUpdated(message=e.__str__())
         except:
@@ -160,7 +162,35 @@ class DatabaseHandler():
         except:
             raise GuildNotUpdated()
 
-        logging.debug("Guild textChannel Updated")
+        logging.debug("Guild Text Channel Updated")
+        return
+
+    async def UpdateGuildVoiceChannel(self, guildId, voiceChannelId):
+        sql = """ UPDATE guilds
+                    SET voice_channel_id = ?
+                    WHERE guild_id = ? """
+        try:
+            await self.CommitToDatabase(sql, (voiceChannelId, guildId))
+        except CommitToDatabaseFailed as e:
+            raise GuildNotUpdated(message=e.__str__())
+        except:
+            raise GuildNotUpdated()
+
+        logging.debug("Guild Voice Channel Updated")
+        return
+
+    async def UpdateGuildRole(self, guildId, roleId):
+        sql = """ UPDATE guilds
+                    SET role_id = ?
+                    WHERE guild_id = ? """
+        try:
+            await self.CommitToDatabase(sql, (roleId, guildId))
+        except CommitToDatabaseFailed as e:
+            raise GuildNotUpdated(message=e.__str__())
+        except:
+            raise GuildNotUpdated()
+
+        logging.debug("Guild Role Updated")
         return
 
 
@@ -219,7 +249,7 @@ class DatabaseHandler():
         logging.debug(f'Guild {guildId} exists in the Database')
 
         try:
-            cursor = self.CommitToDatabase(sql, (guildId, ), False)
+            cursor = await self.CommitToDatabase(sql, (guildId, ), False)
         except:
             raise
         
