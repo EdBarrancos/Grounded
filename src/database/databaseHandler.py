@@ -40,6 +40,11 @@ class GuildNotRemoved(databaseExceptions.DatabaseException):
     """ Failed to Remove Guild from Database """
     def __init__(self, message="Failed to Remove Guild From Database"):
         super(GuildNotRemoved, self).__init__(message)
+
+class GuildNonExistant(databaseExceptions.DatabaseException):
+    """ Guild Doesn't Exist in the Database """
+    def __init__(self, message="Guild does not exists within the Database"):
+        super(GuildNonExistant, self).__init__(message)
         
 
 class DatabaseHandler():
@@ -206,3 +211,37 @@ class DatabaseHandler():
             return id
         else:
             logging.debug(f'Guild {guildName} Does exist')
+
+    async def GetGuild(self, guildId):
+        sql = """ SELECT name, owner_id, text_channel_id, voice_channel_id, role_id FROM guilds WHERE guild_id = ? """
+        if not await self.DoesGuildExit(guildId): raise GuildNonExistant()
+
+        logging.debug(f'Guild {guildId} exists in the Database')
+
+        try:
+            cursor = self.CommitToDatabase(sql, (guildId, ), False)
+        except:
+            raise
+        
+        rows = cursor.fetchall()
+
+        #guild = dict()
+
+        for row in rows:
+            print(row)
+
+
+    async def GetGuildName(self, guildId):
+        pass
+
+    async def GetGuildOwnerId(self, guildId):
+        pass
+
+    async def GetGuildTextChannelId(self, guildId):
+        pass
+
+    async def GetGuildVoiceChannelId(self, guildId):
+        pass
+
+    async def GetGuildRoleId(self, guildId):
+        pass
