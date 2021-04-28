@@ -10,6 +10,15 @@ import logging
 import exceptions.databaseExceptions as databaseExceptions
 
 
+#Disclaimer From me. Sorry if this file is too big and the Design Pattern isnt the most Correct
+#   I Should Have another file with a class and that class would contain all the logic, this one
+#       would only have calls to functions of that other class and basically raise errors again
+#           that should make the other file a little bit less clustered. This one would be the 
+#               Database Front and the new one the Handler
+#   I should also put the exceptions in their own file
+
+
+
 #Errors
 class ConnectionNotEstablished(databaseExceptions.DatabaseException):
     """ Connection Failed to be Established """
@@ -242,6 +251,7 @@ class DatabaseHandler():
         else:
             logging.debug(f'Guild {guildName} Does exist')
 
+
     async def GetGuild(self, guildId):
         sql = """ SELECT name, owner_id, text_channel_id, voice_channel_id, role_id FROM guilds WHERE guild_id = ? """
         if not await self.DoesGuildExit(guildId): raise GuildNonExistant()
@@ -300,6 +310,7 @@ class DatabaseHandler():
         for row in rows:
             return row[0]
 
+
     async def GetGuildTextChannelId(self, guildId):
         sql = """ SELECT text_channel_id FROM guilds WHERE guild_id = ? """
         if not await self.DoesGuildExit(guildId): raise GuildNonExistant()
@@ -316,6 +327,7 @@ class DatabaseHandler():
         for row in rows:
             return row[0]
 
+
     async def GetGuildVoiceChannelId(self, guildId):
         sql = """ SELECT voice_channel_id FROM guilds WHERE guild_id = ? """
         if not await self.DoesGuildExit(guildId): raise GuildNonExistant()
@@ -331,6 +343,7 @@ class DatabaseHandler():
 
         for row in rows:
             return row[0]
+
 
     async def GetGuildRoleId(self, guildId):
         sql = """ SELECT role_id FROM guilds WHERE guild_id = ? """
