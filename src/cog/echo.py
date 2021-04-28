@@ -19,4 +19,4 @@ class Echo(commands.Cog):
 
     @commands.command(name=name, aliases=aliases, help=helpMessage,brief=briefMessage)
     async def echo_command(self, ctx, *, message: str):
-        await ctx.send(f'>{message}!')
+        await ctx.send(f'> {message}!')
