@@ -34,6 +34,14 @@ aliasesGT = ("gT", "gt", "get_text")
 helpMessageGT = "The Bot will repeat the name of the current grounded text channel"
 briefMessageGT = "Get the Grounded Text Channel"
 
+# createV
+nameCV = "createV"
+aliasesCV = ("cV", "cv", "create_voice")
+helpMessageCV = ('The bot will create a voice channel if not created beforehand'
+                 'and define it as the Grounded Voice Channel')
+briefMessageCV = "I'll create the playground of the Miss behaved!"
+channelNameV = "Grounded"
+
 
 class GrChannels(commands.Cog):
     def __init__(self, handler):
@@ -82,3 +90,16 @@ class GrChannels(commands.Cog):
 
         await ctx.send(f'This Server\'s Grounded Text channel is the {self.wrapper.CodeWrapper(ctx.guild.get_channel(textChannelId).name)} channel!')
         await ctx.send(f'{self.wrapper.AllAngryWrapper("Any problem With that????")}')
+
+    @commands.command(name=nameCV, aliases=aliasesCV, help=helpMessageCV, brief=briefMessageCV)
+    async def createV_channel(self, ctx):
+        # Check if it exists
+        channel = discord.utils.get(
+            ctx.guild.voice_channels, name=channelNameV)
+        if channel != None:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Grounded already Created!"))}')
+            await self.handler.owner.databaseHandler.UpdateGuild(ctx.guild.id, voiceChannelId=channel.id)
+            return
+
+        channel = await ctx.guild.create_voice_channel(channelNameV)
+        await self.handler.owner.databaseHandler.UpdateGuild(ctx.guild.id, voiceChannelId=channel.id)
