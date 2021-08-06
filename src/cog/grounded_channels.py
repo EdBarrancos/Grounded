@@ -1,22 +1,27 @@
-#Standard Library Imports
+# Standard Library Imports
 
-#Third Party Imports
+# Third Party Imports
 import discord
 from discord.ext import commands
 import logging
 
-#Local Application Imports
+# Local Application Imports
 import wrapper
 
-#defineV
+# defineV
 nameDV = "defineV"
 aliasesDV = ("dV", "dv", "define_voice")
 helpMessageDV = ('Define the Grounded Voice Channel,'
-                'a channel that your badbehavioured users in voice will be redirected to!')
+                 'a channel that your badbehavioured users in voice will be redirected to!')
 briefMessageDV = 'Define the Voice Channel for badbehavioured users'
 
+nameDT = "defineT"
+aliasesDT = ("dT", "dt", "define_text")
+helpMessageDT = ('Define the Grounded Text Channel,'
+                 'a channel that your badbehavioured users in voice will be redirected to!')
+briefMessageDT = 'Define the Text Channel for badbehavioured users'
 
-#getV
+# getV
 nameGV = "getV"
 aliasesGV = ("gV", "gv", "get_voice")
 helpMessageGV = "Get the Grounded Voice Channel"
@@ -31,16 +36,26 @@ class GrChannels(commands.Cog):
 
     @commands.command(name=nameDV, aliases=aliasesDV, help=helpMessageDV, brief=briefMessageDV)
     async def defineV_channel(self, ctx, channel_name: str):
-        channel = discord.utils.get(ctx.guild.voice_channels, name=channel_name)
+        channel = discord.utils.get(
+            ctx.guild.voice_channels, name=channel_name)
         if channel == None:
-            await ctx.send(f'No such Channel!')
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("No such Channel!"))}')
             return
-            
+
         await self.handler.owner.databaseHandler.UpdateGuild(ctx.guild.id, voiceChannelId=channel.id)
-    
+
+    @commands.command(name=nameDT, aliases=aliasesDT, help=helpMessageDT, brief=briefMessageDT)
+    async def defineT_channel(self, ctx, channel_name: str):
+        channel = discord.utils.get(
+            ctx.guild.text_channels, name=channel_name)
+        if channel == None:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("No such Channel!"))}')
+            return
+
+        await self.handler.owner.databaseHandler.UpdateGuild(ctx.guild.id, textChannelId=channel.id)
 
     @commands.command(name=nameGV, aliases=aliasesGV, help=helpMessageGV, brief=briefMessageGV)
     async def getV_channel(self, ctx):
         voiceChannelId = await self.handler.owner.databaseHandler.GetGuildVoiceChannelId(ctx.guild.id)
         await ctx.send(f'This Server\'s Grounded channel is the {self.wrapper.CodeWrapper(ctx.guild.get_channel(voiceChannelId).name)} channel!')
-        await ctx.send(f'{self.wrapper.BoldWrapper("Any problem With that????")}')
+        await ctx.send(f'{self.wrapper.AllAngryWrapper("Any problem With that????")}')

@@ -14,7 +14,7 @@ helpMessage = "I'll repeat Whatever You want me to, but just one word, So watcho
 briefMessage = "I'll repeat one word"
 
 nameT = "talk"
-aliasesT = ()
+aliasesT = ("TALK",)
 helpMessageT = "I'll be angry for you, just tell me what to say!"
 briefMessageT = "I'll be angry for you!"
 
