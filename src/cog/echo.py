@@ -10,12 +10,13 @@ import wrapper
 
 name = "echo"
 aliases = ("repeat", )
-helpMessage = "I'll repeat Whatever You want me to, but just one word, So watchout!"
+helpMessage = "Type after the command and the bot will repeat it"
 briefMessage = "I'll repeat one word"
 
 nameT = "talk"
 aliasesT = ("TALK",)
-helpMessageT = "I'll be angry for you, just tell me what to say!"
+helpMessageT = ('Type after the command'
+                'and the bot will erase your original message and repeat the message for you ')
 briefMessageT = "I'll be angry for you!"
 
 
