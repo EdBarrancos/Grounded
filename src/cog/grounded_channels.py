@@ -2,11 +2,23 @@
 
 # Third Party Imports
 import discord
+from discord import guild
 from discord.ext import commands
 import logging
 
 # Local Application Imports
 import wrapper
+import exceptions.channelManagementExceptions as channelExceptions
+
+
+# EXCEPTIONS
+
+class ChannelNotDefined(channelExceptions.ChannelManagementException):
+    """ Server Channel Not Defined """
+    def __init__(self, message="Server Channel Not Defined"):
+        super(ChannelNotDefined, self).__init__(message)
+
+
 
 # defineV
 nameDV = "defineV"
@@ -42,6 +54,14 @@ helpMessageCV = ('The bot will create a voice channel if not created beforehand'
 briefMessageCV = "I'll create the playground of the Miss behaved!"
 channelNameV = "Grounded"
 
+# createT
+nameCT = "createT"
+aliasesCT = ("cT", "ct", "create_text")
+helpMessageCT = ('The bot will create a voice channel if not created beforehand'
+                 'and define it as the Grounded Voice Channel')
+briefMessageCT = "I'll create the playground of the Miss behaved!"
+channelNameT = "grounded"
+
 
 class GrChannels(commands.Cog):
     def __init__(self, handler):
@@ -49,25 +69,32 @@ class GrChannels(commands.Cog):
         self.wrapper = wrapper.Wrapper()
         logging.info("GrChannels Initialized")
 
+
     @commands.command(name=nameDV, aliases=aliasesDV, help=helpMessageDV, brief=briefMessageDV)
     async def defineV_channel(self, ctx, channel_name: str):
         channel = discord.utils.get(
             ctx.guild.voice_channels, name=channel_name)
-        if channel == None:
+        try:
+            await self.setVoiceChannel(channel, ctx.guild.id)
+        except ChannelNotDefined as e:
             await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("No such Channel!"))}')
             return
-
-        await self.handler.owner.databaseHandler.UpdateGuild(ctx.guild.id, voiceChannelId=channel.id)
+        except Exception as e:
+            raise e
+        
 
     @commands.command(name=nameDT, aliases=aliasesDT, help=helpMessageDT, brief=briefMessageDT)
     async def defineT_channel(self, ctx, channel_name: str):
         channel = discord.utils.get(
             ctx.guild.text_channels, name=channel_name)
-        if channel == None:
+        try:
+            await self.setTextChannel(channel, ctx.guild.id)
+        except ChannelNotDefined as e:
             await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("No such Channel!"))}')
             return
+        except Exception as e:
+            raise e
 
-        await self.handler.owner.databaseHandler.UpdateGuild(ctx.guild.id, textChannelId=channel.id)
 
     @commands.command(name=nameGV, aliases=aliasesGV, help=helpMessageGV, brief=briefMessageGV)
     async def getV_channel(self, ctx):
@@ -77,8 +104,17 @@ class GrChannels(commands.Cog):
             await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("No Channel Defined!"))}')
             return
 
+        channel = discord.utils.get(ctx.guild.voice_channels, id=voiceChannelId)
+        if channel == None:
+            try:
+                await self.setVoiceChannel(None, ctx.guild.id)
+            except ChannelNotDefined:
+                await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("No Channel Defined!"))}')
+            return
+
         await ctx.send(f'This Server\'s Grounded Voice channel is the {self.wrapper.CodeWrapper(ctx.guild.get_channel(voiceChannelId).name)} channel!')
         await ctx.send(f'{self.wrapper.AllAngryWrapper("Any problem With that????")}')
+
 
     @commands.command(name=nameGT, aliases=aliasesGT, help=helpMessageGT, brief=briefMessageGT)
     async def getT_channel(self, ctx):
@@ -88,8 +124,18 @@ class GrChannels(commands.Cog):
             await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("No Channel Defined!"))}')
             return
 
+        channel = discord.utils.get(ctx.guild.text_channels, id=textChannelId)
+        if channel == None:
+            try:
+                await self.setTextChannel(None, ctx.guild.id)
+            except ChannelNotDefined:
+                await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("No Channel Defined!"))}')
+            return
+
+
         await ctx.send(f'This Server\'s Grounded Text channel is the {self.wrapper.CodeWrapper(ctx.guild.get_channel(textChannelId).name)} channel!')
         await ctx.send(f'{self.wrapper.AllAngryWrapper("Any problem With that????")}')
+
 
     @commands.command(name=nameCV, aliases=aliasesCV, help=helpMessageCV, brief=briefMessageCV)
     async def createV_channel(self, ctx):
@@ -98,8 +144,70 @@ class GrChannels(commands.Cog):
             ctx.guild.voice_channels, name=channelNameV)
         if channel != None:
             await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Grounded already Created!"))}')
-            await self.handler.owner.databaseHandler.UpdateGuild(ctx.guild.id, voiceChannelId=channel.id)
-            return
+        
+        if channel == None:
+            channel = await ctx.guild.create_voice_channel(channelNameV)
+            logging.info("Voice Channel Created")
 
-        channel = await ctx.guild.create_voice_channel(channelNameV)
-        await self.handler.owner.databaseHandler.UpdateGuild(ctx.guild.id, voiceChannelId=channel.id)
+        try:
+            await self.setVoiceChannel(channel, guildId = ctx.guild.id)
+        except ChannelNotDefined as e:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("No such Channel!"))}')
+            return
+        except Exception as e:
+            raise e
+        return
+
+
+    @commands.command(name=nameCT, aliases=aliasesCT, help=helpMessageCT, brief=briefMessageCT)
+    async def createT_channel(self, ctx):
+        # Check if it exists
+        channel = discord.utils.get(
+            ctx.guild.text_channels, name=channelNameT)
+        if channel != None:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Grounded already Created!"))}')
+        
+        if channel == None:
+            channel = await ctx.guild.create_text_channel(channelNameT)
+            logging.info("Text Channel Created")
+
+        try:
+            await self.setTextChannel(channel, guildId = ctx.guild.id)
+        except ChannelNotDefined as e:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("No such Channel!"))}')
+            return
+        except Exception as e:
+            raise e
+        return
+
+
+    async def setVoiceChannel(self, channel, guildId = None):
+        if channel == None and guildId == None:
+            raise ChannelNotDefined()
+        if channel == None and guildId != None:
+            await self.handler.owner.databaseHandler.UpdateGuild(guildId, voiceChannelId = None)
+            raise ChannelNotDefined()
+
+        try:
+            if channel.id == await self.handler.owner.databaseHandler.GetGuildVoiceChannelId(channel.guild.id):
+                logging.info("Current Channel same as Channel to be Set")
+                return
+            await self.handler.owner.databaseHandler.UpdateGuild(channel.guild.id, voiceChannelId=channel.id)
+        except Exception as e:
+            raise e
+
+    
+    async def setTextChannel(self, channel, guildId = None):
+        if channel == None and guildId == None:
+            raise ChannelNotDefined()
+        if channel == None and guildId != None:
+            await self.handler.owner.databaseHandler.UpdateGuild(guildId, textChannelId = None)
+            raise ChannelNotDefined()
+            
+        try:
+            if channel.id == await self.handler.owner.databaseHandler.GetGuildTextChannelId(channel.guild.id):
+                logging.info("Current Channel same as Channel to be Set")
+                return
+            await self.handler.owner.databaseHandler.UpdateGuild(channel.guild.id, textChannelId=channel.id)
+        except Exception as e:
+            raise e
