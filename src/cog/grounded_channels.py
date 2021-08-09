@@ -76,11 +76,11 @@ class GrChannels(commands.Cog):
             ctx.guild.voice_channels, name=channel_name)
         try:
             await self.setVoiceChannel(channel, ctx.guild.id)
-        except ChannelNotDefined as e:
+        except ChannelNotDefined:
             await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("No such Channel!"))}')
             return
-        except Exception as e:
-            raise e
+        except:
+            raise
         
 
     @commands.command(name=nameDT, aliases=aliasesDT, help=helpMessageDT, brief=briefMessageDT)
@@ -89,11 +89,11 @@ class GrChannels(commands.Cog):
             ctx.guild.text_channels, name=channel_name)
         try:
             await self.setTextChannel(channel, ctx.guild.id)
-        except ChannelNotDefined as e:
+        except ChannelNotDefined:
             await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("No such Channel!"))}')
             return
-        except Exception as e:
-            raise e
+        except:
+            raise
 
 
     @commands.command(name=nameGV, aliases=aliasesGV, help=helpMessageGV, brief=briefMessageGV)
@@ -151,11 +151,11 @@ class GrChannels(commands.Cog):
 
         try:
             await self.setVoiceChannel(channel, guildId = ctx.guild.id)
-        except ChannelNotDefined as e:
+        except ChannelNotDefined:
             await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("No such Channel!"))}')
             return
-        except Exception as e:
-            raise e
+        except:
+            raise
         return
 
 

@@ -15,4 +15,5 @@ class CogHandler():
 
     async def addCogs(self):
         self.owner.add_cog(Echo(self))
-        self.owner.add_cog(GrChannels(self))
+        grChannelCog = GrChannels(self)
+        self.owner.add_cog(grChannelCog)
