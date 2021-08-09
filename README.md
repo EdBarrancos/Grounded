@@ -84,6 +84,8 @@ Just make sure u find a cool nickname to identify your plans
 
 -> Parse file DatabaseHandler
 
+-> Handle same name roles and channels
+
 ## About Me
 
 Hello I'm Yours Trully, Or Eduardo Barrancos, I'm a college student who has fun doing little projects like this one :)
