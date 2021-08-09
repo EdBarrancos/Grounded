@@ -1,12 +1,14 @@
 # Standard Library Imports
 
 # Third Party Imports
+from cog.grounded_roles import GrRoles
 import discord
 from discord.ext import commands
 
 # Local Application Imports
 from .echo import Echo
 from .grounded_channels import GrChannels
+from .grounded_roles import GrRoles
 
 
 class CogHandler():
@@ -16,4 +18,10 @@ class CogHandler():
     async def addCogs(self):
         self.owner.add_cog(Echo(self))
         grChannelCog = GrChannels(self)
+        grRolesCog = GrRoles(self)
         self.owner.add_cog(grChannelCog)
+        self.owner.add_cog(grRolesCog)
+
+        grChannelCog.setRolesHandler(grRolesCog)
+        grRolesCog.setChannelsHandler(grChannelCog)
+

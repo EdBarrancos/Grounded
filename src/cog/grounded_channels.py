@@ -69,6 +69,11 @@ class GrChannels(commands.Cog):
         self.wrapper = wrapper.Wrapper()
         logging.info("GrChannels Initialized")
 
+    
+    async def setRolesHandler(self, rolesHandler):
+        self.rolesHandler = rolesHandler
+        return
+
 
     @commands.command(name=nameDV, aliases=aliasesDV, help=helpMessageDV, brief=briefMessageDV)
     async def defineV_channel(self, ctx, channel_name: str):
@@ -209,5 +214,5 @@ class GrChannels(commands.Cog):
                 logging.info("Current Channel same as Channel to be Set")
                 return
             await self.handler.owner.databaseHandler.UpdateGuild(channel.guild.id, textChannelId=channel.id)
-        except Exception as e:
-            raise e
+        except:
+            raise
