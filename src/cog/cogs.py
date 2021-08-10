@@ -22,6 +22,6 @@ class CogHandler():
         self.owner.add_cog(grChannelCog)
         self.owner.add_cog(grRolesCog)
 
-        await grChannelCog.setRolesHandler(grRolesCog)
-        await grRolesCog.setChannelsHandler(grChannelCog)
+        await grChannelCog.SetRolesHandler(grRolesCog)
+        await grRolesCog.SetChannelsHandler(grChannelCog)
 
