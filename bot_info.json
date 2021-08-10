@@ -8,6 +8,6 @@
             "Flask",
             "sqlite3"
         ],
-        "Link": "https://discord.com/api/oauth2/authorize?client_id=834230749921148988&permissions=21179472&scope=bot"
+        "Link": "https://discord.com/api/oauth2/authorize?client_id=834230749921148988&permissions=103579593840&scope=bot"
     }
 }
