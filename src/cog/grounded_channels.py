@@ -8,6 +8,8 @@ from discord.errors import Forbidden
 from discord.ext import commands
 import logging
 
+from discord.role import Role
+
 # Local Application Imports
 import wrapper
 import exceptions.channelManagementExceptions as channelExceptions
@@ -22,6 +24,11 @@ class ChannelNotDefined(channelExceptions.ChannelManagementException):
     """ Server Channel Not Defined """
     def __init__(self, message="Server Channel Not Defined"):
         super(ChannelNotDefined, self).__init__(message)
+
+class RoleNotDefined(channelExceptions.ChannelManagementException):
+    """ Server Role Not Defined """
+    def __init__(self, message="Server Role Not Defined"):
+        super(RoleNotDefined, self).__init__(message=message)
 
 
 
@@ -121,6 +128,13 @@ class GrChannels(commands.Cog):
         except:
             raise
 
+        try:
+            await self.UpdateTextChannelPermissions(ctx.guild)
+        except:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Channels permissions NOT updated!"))}')
+        else:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Channels permissions  updated!"))}')
+
         await self.GetT_channel(ctx)
         return
 
@@ -161,7 +175,7 @@ class GrChannels(commands.Cog):
 
     @commands.command(name=nameCV, aliases=aliasesCV, help=helpMessageCV, brief=briefMessageCV)
     async def CreateV_channel(self, ctx):
-        if await self.DoesChannelExitInGuild(ctx.guild, channelNameV):
+        if await self.DoesChannelExistsInGuild(ctx.guild, channelNameV):
             await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Grounded already Created!"))}')
             await self.DefineV_channel(ctx, channelNameV)
             return
@@ -188,16 +202,28 @@ class GrChannels(commands.Cog):
 
     @commands.command(name=nameCT, aliases=aliasesCT, help=helpMessageCT, brief=briefMessageCT)
     async def CreateT_channel(self, ctx):
-        if await self.DoesChannelExitInGuild(ctx.guild, channelNameT):
+        if await self.DoesChannelExistsInGuild(ctx.guild, channelNameT):
             await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Grounded already Created!"))}')
             await self.DefineT_channel(ctx, channelNameT)
+            try:
+                await self.UpdateTextChannelPermissions(ctx.guild)
+            except:
+                await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Channels permissions NOT updated!"))}')
+            else:
+                await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Channels permissions  updated!"))}')
             return
 
         try:
-            channel = await ctx.guild.create_text_channel(channelNameT)
+            overwrites = await self.GetOverwritesTextChannel(ctx.guild)
+        except RoleNotDefined:
+            overwrites = None
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Grounded Role To be defined!"))}')
+
+        try:
+            channel = await ctx.guild.create_text_channel(channelNameT, overwrites=overwrites)
         except Forbidden:
             await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("I dont have permission to create a channel, apperantly!"))}')
-            return
+            return             
         else:
             logging.info("Text Channel Created")
 
@@ -217,8 +243,41 @@ class GrChannels(commands.Cog):
     #NON COMMAND FUNCTION#
     ######################
 
+    
+    async def UpdateTextChannelPermissions(self, guild):
+        try:
+            overwrites = await self.GetOverwritesTextChannel(guild)
+        except RoleNotDefined:
+            raise
 
-    async def DoesChannelExitInGuild(self, guild, channelName):
+        channel = guild.get_channel(await self.GetTextChannelId(guild))
+        for key in overwrites:
+            try:
+                await channel.set_permissions(key, overwrite=overwrites[key])
+            except:
+                raise
+        return
+
+
+    async def GetOverwritesTextChannel(self, guild):
+        groundedRoleId = await self.rolesHandler.GetRoleId(guild)
+        if groundedRoleId == None:
+            raise RoleNotDefined()
+
+        role = guild.get_role(groundedRoleId)
+        if role == None:
+            raise RoleNotDefined()
+
+        overwrites={
+            guild.me: discord.PermissionOverwrite(read_messages= True, send_messages=True),
+            guild.default_role: discord.PermissionOverwrite(read_messages=False, send_messages=False),
+            role: discord.PermissionOverwrite(read_messages=True, send_messages=True)
+        }
+        
+        return overwrites
+
+
+    async def DoesChannelExistsInGuild(self, guild, channelName):
         if discord.utils.get(guild.channels, name=channelName) == None:
             return False
         return True

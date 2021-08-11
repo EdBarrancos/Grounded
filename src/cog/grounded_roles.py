@@ -141,7 +141,7 @@ class GrRoles(commands.Cog):
             raise RoleNotDefined()
         if role == None and guildId != None:
             await self.handler.owner.databaseHandler.UpdateGuild(guildId, roleId = None)
-            raise RoleNotDefined()
+            return
 
         try:
             if role.id == await self.handler.owner.databaseHandler.GetGuildRoleId(role.guild.id):
