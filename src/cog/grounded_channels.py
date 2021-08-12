@@ -111,6 +111,13 @@ class GrChannels(commands.Cog):
         except:
             raise
 
+        try:
+            await self.UpdateVoiceChannelPermissions(ctx.guild)
+        except:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Channels permissions NOT updated!"))}')
+        else:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Channels permissions  updated!"))}')
+
         await self.GetV_channel(ctx)
         return
 
@@ -179,9 +186,15 @@ class GrChannels(commands.Cog):
             await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Grounded already Created!"))}')
             await self.DefineV_channel(ctx, channelNameV)
             return
+
+        try:
+            overwrites = await self.GetOverwritesVoiceChannel(ctx.guild)
+        except RoleNotDefined:
+            overwrites = None
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Grounded Role To be defined!"))}')
         
         try:
-            channel = await ctx.guild.create_voice_channel(channelNameV)
+            channel = await ctx.guild.create_voice_channel(channelNameV, overwrites=overwrites)
         except Forbidden:
             await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("I dont have permission to create a channel, apperantly!"))}')
             return
@@ -205,12 +218,6 @@ class GrChannels(commands.Cog):
         if await self.DoesChannelExistsInGuild(ctx.guild, channelNameT):
             await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Grounded already Created!"))}')
             await self.DefineT_channel(ctx, channelNameT)
-            try:
-                await self.UpdateTextChannelPermissions(ctx.guild)
-            except:
-                await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Channels permissions NOT updated!"))}')
-            else:
-                await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Channels permissions  updated!"))}')
             return
 
         try:
@@ -243,6 +250,36 @@ class GrChannels(commands.Cog):
     #NON COMMAND FUNCTION#
     ######################
 
+
+    async def GetRoleFromRolesHandler(self, guild):
+        groundedRoleId = await self.rolesHandler.GetRoleId(guild)
+
+        if groundedRoleId == None:
+            raise RoleNotDefined()
+
+        role = guild.get_role(groundedRoleId)
+        
+        if role == None:
+            raise RoleNotDefined()
+        return role
+
+    
+    async def UpdateChannelPermissions(self, ctx):
+        try:
+            await self.UpdateTextChannelPermissions(ctx.guild)
+        except:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Text Channels permissions NOT updated!"))}')
+        else:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Text Channels permissions  updated!"))}')
+        
+
+        try:
+            await self.UpdateVoiceChannelPermissions(ctx.guild)
+        except:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Voice Channels permissions NOT updated!"))}')
+        else:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Voice Channels permissions  updated!"))}')
+
     
     async def UpdateTextChannelPermissions(self, guild):
         try:
@@ -258,15 +295,42 @@ class GrChannels(commands.Cog):
                 raise
         return
 
+    
+    async def UpdateVoiceChannelPermissions(self, guild):
+        try:
+            overwrites = await self.GetOverwritesVoiceChannel(guild)
+        except RoleNotDefined:
+            raise
+
+        channel = guild.get_channel(await self.GetTextChannelId(guild))
+        for key in overwrites:
+            try:
+                await channel.set_permissions(key, overwrites=overwrites[key])
+            except:
+                raise
+        return
+
+
+    async def GetOverwritesVoiceChannel(self, guild):
+        try:
+            role = await self.GetRoleFromRolesHandler(guild)
+        except:
+            raise
+
+        overwrites={
+            guild.me: discord.PermissionOverwrite(view_channel= True, connect=True),
+            guild.default_role: discord.PermissionOverwrite(view_channel=True, connect=False),
+            role: discord.PermissionOverwrite(view_channel=True, connect=True)
+        }
+        
+        return overwrites
+
 
     async def GetOverwritesTextChannel(self, guild):
-        groundedRoleId = await self.rolesHandler.GetRoleId(guild)
-        if groundedRoleId == None:
-            raise RoleNotDefined()
-
-        role = guild.get_role(groundedRoleId)
-        if role == None:
-            raise RoleNotDefined()
+        try:
+            role = await self.GetRoleFromRolesHandler(guild)
+        except:
+            raise
 
         overwrites={
             guild.me: discord.PermissionOverwrite(read_messages= True, send_messages=True),

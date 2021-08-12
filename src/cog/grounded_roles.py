@@ -77,6 +77,14 @@ class GrRoles(commands.Cog):
         except:
             raise
 
+        try:
+            await self.channelsHandler.UpdateTextChannelPermissions(ctx.guild)
+        except:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Channels permissions NOT updated!"))}')
+        else:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Channels permissions  updated!"))}')
+
+
         await self.GetRole(ctx)
         return
 
@@ -120,6 +128,9 @@ class GrRoles(commands.Cog):
             return
         except:
             raise
+
+        
+        await self.channelsHandler.UpdateChannelPermissions(ctx.guild)
 
         await self.GetRole(ctx)
         return

@@ -15,6 +15,7 @@ from grounded_bot import MyBot
 logging.basicConfig(format='%(levelname)s:%(message)s', 
                     filename="bot_logs/grounded_bot.log", 
                     level=logging.INFO, filemode="w")
+
                     
 myBot = MyBot(("!", "$"))
 
