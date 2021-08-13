@@ -16,8 +16,10 @@ logging.basicConfig(format='%(levelname)s:%(message)s',
                     filename="bot_logs/grounded_bot.log", 
                     level=logging.INFO, filemode="w")
 
-                    
-myBot = MyBot(("!", "$"))
+intents = discord.Intents.default()
+intents.members = True
+
+myBot = MyBot(("!", "$"), intents=intents)
 
 # keep_alive.keep_alive()
 

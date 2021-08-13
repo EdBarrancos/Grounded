@@ -42,6 +42,21 @@ briefMessageCR = "I'll create the tag of the Miss behaved!"
 roleName = "GROUNDED"
 
 
+#addRole
+nameAR = "addR"
+aliasesAR = ("ar", "aR", "add_role")
+helpMessageAR = "Receives an argument with the member's name and adds the grounded role to them"
+briefMessageAR = "Who has been missbehaving?"
+
+
+#removeRoles
+nameRR = "removeR"
+aliasesRR = ("rr", "rR", "remove_role")
+helpMessageRR = "Receives an argument with the member's name and removes the grounded role from them"
+briefMessageRR = "Who has been a good boy/girl?"
+
+
+
 class GrRoles(commands.Cog):
 
     ################
@@ -136,10 +151,81 @@ class GrRoles(commands.Cog):
         return
 
 
+    @commands.command(name=nameAR, aliases=aliasesAR, help=helpMessageAR, brief=briefMessageAR)
+    async def AddRole(self, ctx, *, memberName):
+        try:
+            member = ctx.guild.get_member_named(memberName)
+        except:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Unable to get Currespondant Member"))}')
+            return
+
+        if member == None:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Member NonExistant"))}') 
+            return
+
+        try:
+            await self.AddGroundedRoleToMember(member, ctx.guild)
+        except:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Unable to add Role to Member"))}')
+            return
+
+    
+    @commands.command(name=nameRR, aliases=aliasesRR, help=helpMessageRR, brief=briefMessageRR)
+    async def RemoveRole(self, ctx, *, memberName):
+        try:
+            member = ctx.guild.get_member_named(memberName)
+        except:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Unable to get Currespondant Member"))}')
+            return
+
+        if member == None:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Member NonExistant"))}') 
+            return
+
+        try:
+            await self.RemoveGroundedRoleFromMember(member, ctx.guild)
+        except:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Unable to Remove Role from Member"))}')
+            return
+
+
+
     ##########################
     # NON COMMANDS FUNCTIONS #
     ##########################
 
+
+    async def RemoveGroundedRoleFromMember(self, member, guild):
+        try:
+            roleId = await self.GetRoleId(guild)
+        except:
+            raise
+
+        if roleId == None:
+            raise RoleNotDefined()
+
+        role = guild.get_role(roleId)
+
+        try:
+            await member.remove_roles(role)
+        except:
+            raise  
+
+    async def AddGroundedRoleToMember(self, member, guild):
+        try:
+            roleId = await self.GetRoleId(guild)
+        except:
+            raise
+
+        if roleId == None:
+            raise RoleNotDefined()
+
+        role = guild.get_role(roleId)
+
+        try:
+            await member.add_roles(role)
+        except:
+            raise        
 
     async def DoesRoleExistInGuild(self, guild, roleName):
         if discord.utils.get(guild.roles, name=roleName) == None:
