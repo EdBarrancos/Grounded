@@ -62,7 +62,7 @@ Just make sure u find a cool nickname to identify your plans
 
 -> Define a Grounded Role
 
-->  Allow access to Grounded Channel, text
+->  Allow access to Grounded Text Channel
 
 ### To be Implemented By Yours Trully
 
