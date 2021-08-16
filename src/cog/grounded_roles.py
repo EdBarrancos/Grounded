@@ -1,6 +1,7 @@
 # Standard Library Imports
 
 # Third Party Imports
+import asyncio
 import discord
 from discord import guild
 from discord.errors import Forbidden
@@ -16,6 +17,12 @@ class RoleNotDefined(roleExceptions.RoleManagementException):
     """ Server Role Not Defined """
     def __init__(self, message="Server Role Not Defined"):
         super(RoleNotDefined, self).__init__(message)
+
+
+class MemberDoesNotHaveRole(roleExceptions.RoleManagementException):
+    """ Member does not have Role """
+    def __init__(self, message="Member does not have Role"):
+        super(MemberDoesNotHaveRole, self).__init__(message)
 
 
 #defineR
@@ -43,9 +50,17 @@ roleName = "GROUNDED"
 
 
 #addRole
+timer = 60
+nameST = "setT"
+aliasesST = ("st", "sT", "set_timer")
+helpMessageST = f'Set the Timer for the removal of the Grounded Role in Seconds| -1 to deactivate the timer'
+
+
+
+#addRole
 nameAR = "addR"
 aliasesAR = ("ar", "aR", "add_role")
-helpMessageAR = "Receives an argument with the member's name and adds the grounded role to them"
+helpMessageAR = f'Receives an argument with the members name and adds the grounded role to them. After {timer} seconds it will be removed'
 briefMessageAR = "Who has been missbehaving?"
 
 
@@ -151,6 +166,18 @@ class GrRoles(commands.Cog):
         return
 
 
+    @commands.command(name=nameST, aliases=aliasesST, help=helpMessageST)
+    async def SetTimer(self, ctx, value):
+        try:
+            value = eval(value)
+        except:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Wrong Timer Value"))}')
+
+        timer = value
+        await ctx.send(f'{self.wrapper.AllAngryWrapper(f"Timer Set to {timer}")}')
+        pass
+
+
     @commands.command(name=nameAR, aliases=aliasesAR, help=helpMessageAR, brief=briefMessageAR)
     async def AddRole(self, ctx, *, memberName):
         try:
@@ -168,6 +195,14 @@ class GrRoles(commands.Cog):
         except:
             await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Unable to add Role to Member"))}')
             return
+
+        try:
+            await self.StartGroundedRoleRemovalTimer(member, ctx.guild)
+        except:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Unable to Remove Role from Member"))}')
+            return
+        else:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Roll Removed"))}')
 
     
     @commands.command(name=nameRR, aliases=aliasesRR, help=helpMessageRR, brief=briefMessageRR)
@@ -195,6 +230,20 @@ class GrRoles(commands.Cog):
     ##########################
 
 
+    async def StartGroundedRoleRemovalTimer(self, member, guild):
+        if timer == -1:
+            return
+        if not isinstance(timer, int):
+            return
+
+        await asyncio.sleep(timer)
+
+        try:
+            await self.RemoveGroundedRoleFromMember(member, guild)
+        except:
+            raise
+
+
     async def RemoveGroundedRoleFromMember(self, member, guild):
         try:
             roleId = await self.GetRoleId(guild)
@@ -205,6 +254,9 @@ class GrRoles(commands.Cog):
             raise RoleNotDefined()
 
         role = guild.get_role(roleId)
+
+        if role not in member.roles:
+            return
 
         try:
             await member.remove_roles(role)
@@ -221,6 +273,9 @@ class GrRoles(commands.Cog):
             raise RoleNotDefined()
 
         role = guild.get_role(roleId)
+
+        if role in member.roles:
+            return
 
         try:
             await member.add_roles(role)
