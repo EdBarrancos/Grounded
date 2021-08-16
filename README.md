@@ -70,11 +70,11 @@ Just make sure u find a cool nickname to identify your plans
 
 -> Command to mute and unmute bad and good behaved users, respectively
 
+-> Put Badbehaved users in Grounded Channel, voice.
+
 ### To be Implemented By Yours Trully
 
 -> custom help command
-
--> Put Badbehaved users in Grounded Channel, voice.
 
 -> Command to randomly put a user in Grounded Channel
 

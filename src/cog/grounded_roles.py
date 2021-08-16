@@ -88,6 +88,11 @@ nameUM = "unmuteM"
 aliasesUM = ("um", "uM", "unmute_members")
 helpMessageUM = "Unmute the members that have been badbehaving"
 
+#moveVoice
+nameMV="moveV"
+aliasesMV= ("mv", "mV", "move_voice")
+helpMessageMV="Moves grounded members to Grounded Voice"
+
 
 
 class GrRoles(commands.Cog):
@@ -262,7 +267,7 @@ class GrRoles(commands.Cog):
         try:
             members = await self.GetMembersWithGroundedRole(ctx.guild)
         except:
-            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Unable to get  Members"))}')
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Unable to get Members"))}')
             return
 
         if members == None:
@@ -270,10 +275,36 @@ class GrRoles(commands.Cog):
 
         for member in members:
             try:
-                await member.edit(mute = True)
+                if member.voice != None:
+                    await member.edit(mute = True)
             except:
                 await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper(f"Unable to mute {member}"))}')
 
+
+    @commands.command(name=nameMV, aliases=aliasesMV, help=helpMessageMV)
+    async def MoveToVoice(self, ctx):
+        try:
+            members = await self.GetMembersWithGroundedRole(ctx.guild)
+        except:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Unable to get Members"))}')
+            return
+
+        if members == None:
+            return
+
+        voice_channel = await self.channelsHandler.GetVoiceChannelId(ctx.guild)
+        if voice_channel == None:
+            return
+        
+        voice_channel = ctx.guild.get_channel(voice_channel)
+
+        for member in members:
+            if member.voice == None:
+                return
+            try:
+                await member.edit(voice_channel = voice_channel)
+            except:
+                await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper(f"Unable to move {member}"))}')
 
     @commands.command(name=nameUM, aliases=aliasesUM, help=helpMessageUM)
     async def UnmuteMembers(self, ctx):
@@ -288,7 +319,8 @@ class GrRoles(commands.Cog):
 
         for member in members:
             try:
-                await member.edit(mute = False)
+                if member.voice != None:
+                    await member.edit(mute = False)
             except:
                 await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper(f"Unable to unmute {member}"))}')
 
@@ -344,7 +376,11 @@ class GrRoles(commands.Cog):
 
         role = guild.get_role(roleId)
 
-        await member.edit(mute = False)
+        try:
+            if member.voice != None:
+                await member.edit(mute = False)
+        except:
+            raise
 
         if role not in member.roles:
             return
