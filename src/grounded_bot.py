@@ -17,6 +17,7 @@ class MyBot(commands.Bot):
         logging.info("Intializing Bot...")
         super().__init__(*args, **kwargs)
         logging.info("Bot Initialized Successfully")
+        self.default_timer = 60
 
 
     async def on_ready(self):
@@ -66,7 +67,7 @@ class MyBot(commands.Bot):
         logging.info("Updating Database")
         for guild in self.guilds:
             try:
-                await self.databaseHandler.AddGuild(guild.id, guild.name, guild.owner_id)
+                await self.databaseHandler.AddGuild(guild.id, guild.name, guild.owner_id, timer=self.default_timer)
             except exceptions.databaseExceptions.DatabaseException as e:
                 logging.error(e)
                 raise
@@ -80,7 +81,7 @@ class MyBot(commands.Bot):
         logging.info(f'Guild {guild.name} joined')
 
         try:
-            await self.databaseHandler.AddNewGuild(guild.id, guild.name, guild.owner_id)
+            await self.databaseHandler.AddNewGuild(guild.id, guild.name, guild.owner_id, timer=self.default_timer)
         except exceptions.databaseExceptions.DatabaseException as e:
             logging.error(e)
             raise

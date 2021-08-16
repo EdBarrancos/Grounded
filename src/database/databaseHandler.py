@@ -6,6 +6,8 @@ import asyncio
 import sqlite3
 import logging
 
+from discord import guild
+
 # Local Application Imports
 import exceptions.databaseExceptions as databaseExceptions
 
@@ -66,7 +68,8 @@ class DatabaseHandler():
                                             owner_id integer NOT NULL,
                                             text_channel_id integer,
                                             voice_channel_id integer,
-                                            role_id integer                                           
+                                            role_id integer,
+                                            timer integer                                         
                                         );  """
 
 
@@ -120,12 +123,12 @@ class DatabaseHandler():
             return cur
 
 
-    async def AddNewGuild(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelId=None, roleId=None):
-        sql = """ INSERT INTO guilds(guild_id, name, owner_id, text_channel_id, voice_channel_id, role_id)
-              VALUES(?,?,?,?,?,?)"""
+    async def AddNewGuild(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelId=None, roleId=None, timer=None):
+        sql = """ INSERT INTO guilds(guild_id, name, owner_id, text_channel_id, voice_channel_id, role_id, timer)
+              VALUES(?,?,?,?,?,?,?)"""
 
         try:
-            guild = await self.CreateNewGuild(guildId, guildName, ownerId, textChannelId, voiceChannelId, roleId)
+            guild = await self.CreateNewGuild(guildId, guildName, ownerId, textChannelId, voiceChannelId, roleId, timer)
             cursor = await self.CommitToDatabase(sql, guild)
         except CommitToDatabaseFailed as e:
             raise GuildNotAdded(message=e.__str__())
@@ -137,19 +140,20 @@ class DatabaseHandler():
         return cursor.lastrowid
 
 
-    async def CreateNewGuild(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelId=None, roleId=None):
-        guild = (guildId, guildName, ownerId, textChannelId, voiceChannelId, roleId)
+    async def CreateNewGuild(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelId=None, roleId=None, timer=None):
+        guild = (guildId, guildName, ownerId, textChannelId, voiceChannelId, roleId, timer)
 
         logging.info("Create New Guild")
         logging.debug(f'New Guild Created Name: {guildName} and Id: {guildId}')
         return guild
 
 
-    async def UpdateGuild(self, guildId, textChannelId=None, voiceChannelId=None, roleId=None):
+    async def UpdateGuild(self, guildId, textChannelId=None, voiceChannelId=None, roleId=None, timer=None):
         try:
             if textChannelId != None: await self.UpdateGuildTextChannel(guildId, textChannelId)
             if voiceChannelId != None: await self.UpdateGuildVoiceChannel(guildId, voiceChannelId)
             if roleId != None: await self.UpdateGuildRole(guildId, roleId)
+            if timer != None: await self.UpdateGuildTimer(guildId, timer)
         except GuildNotUpdated as e:
             raise GuildNotUpdated(message=e.__str__())
         except:
@@ -158,6 +162,23 @@ class DatabaseHandler():
         logging.debug("Guild Updated in Database")
 
         return
+
+    
+    async def UpdateGuildTimer(self, guildId, timer):
+        sql = """ UPDATE guilds
+                    SET timer = ?
+                    WHERE guild_id = ?"""
+        
+        try:
+            await self.CommitToDatabase(sql, (timer, guildId))
+        except CommitToDatabaseFailed as e:
+            raise GuildNotUpdated(message=e.__str__())
+        except:
+            raise GuildNotUpdated()
+
+        logging.debug("Guild Timer Updated")
+        return
+
 
 
     async def UpdateGuildTextChannel(self, guildId, textChannelId):
@@ -238,11 +259,11 @@ class DatabaseHandler():
         return len(cursor.fetchall()) != 0
 
     
-    async def AddGuild(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelId=None, roleId=None):
+    async def AddGuild(self, guildId, guildName, ownerId, textChannelId=None, voiceChannelId=None, roleId=None, timer=None):
         if not await self.DoesGuildExit(guildId):
             logging.debug(f'Guild {guildName} Does not exist in database')
             try:
-                id = await self.AddNewGuild(guildId, guildName, ownerId, textChannelId, voiceChannelId, roleId)
+                id = await self.AddNewGuild(guildId, guildName, ownerId, textChannelId, voiceChannelId, roleId, timer)
             except:
                 raise
             
@@ -347,6 +368,23 @@ class DatabaseHandler():
 
     async def GetGuildRoleId(self, guildId):
         sql = """ SELECT role_id FROM guilds WHERE guild_id = ? """
+        if not await self.DoesGuildExit(guildId): raise GuildNonExistant()
+
+        logging.debug(f'Guild {guildId} exists in the Database')
+
+        try:
+            cursor = await self.CommitToDatabase(sql, (guildId, ), False)
+        except:
+            raise
+        
+        rows = cursor.fetchall()
+
+        for row in rows:
+            return row[0]
+
+    
+    async def GetGuildTimer(self, guildId):
+        sql = """ SELECT timer FROM guilds WHERE guild_id = ? """
         if not await self.DoesGuildExit(guildId): raise GuildNonExistant()
 
         logging.debug(f'Guild {guildId} exists in the Database')
