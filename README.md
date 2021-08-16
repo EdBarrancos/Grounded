@@ -14,17 +14,23 @@ Select the server when  those bad behaved users need to ***KNOW WHOSE BOSS***
 
 And Done, I promise I want hack your server or anything, the bot is actually very **good behaved** ;)
 
-If the bot isn't online when u do this, *Im so sorry*, I'll try to fix it
+If the bot isn't online when u do this, *Im so sorry*, I'll try to fix it or mail me
 
-## Contributing
+### Commands and Usage
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+With this bot you can define a text and voice channel and a role  as your server's grounded channels and role
 
-Please make sure to update tests as appropriate.
+Only those with the Role may see the text channel and so forth
 
-*Or just go Nutz, who cares. Have fun!*
+You can define already existant ones **(DT -> Define Text Channel, DV -> Define Voice Channel, DR -> Define Role)** or ask the bot to create your own **(CT -> Create Text Channel, CV -> Create Voice Channel, CR -> Create Role)**.
 
-Btw, if you feel like improving this readme Go ahead.
+You can then add the Grounded Role to Channels **(AR (member))**. As for default the Role will be removed after one minute, but can be ajusted **(ST -> Set timer)** *If it is defined as -1, the role won't be removed automatically*. The role can be removed manually too **(RR (member))**
+
+You can mute all members with the Role and Unmute **(MM -> Mute All Grounded Members, UM -> Unmute all Grounded Members)**. Don't Forget to Unmute while you are connected to voice.
+
+You can also move all Grounded members to the Voice Channel **(MV)**
+
+## [Contributing](CONTRIBUTING.md)
 
 ## License
 
@@ -32,65 +38,13 @@ Btw, if you feel like improving this readme Go ahead.
 
 ## Status
 
+First Rude Version Complete
+
 Still In Progress
 
 ## For More Info Check the More Info Link
 
 [More Info](bot_info.json)
-
-## Plans
-
-My Personal Plans for the Bot that Im Working On or Have Worked On
-
-If You want to add Your own plans go on, whos gonna stop you? Not me
-
-Just make sure u find a cool nickname to identify your plans
-
-### Already Implemented By Yours Trully
-
--> A Way to Keep The Bot Running
-
--> Echo Command
-
--> Database that stores current guilds
-
--> Define a Grounded Voice Channel
-
--> Create Wrappers For Messages
-
--> Define a Grounded Channel text
-
--> Define a Grounded Role
-
-->  Allow access to Grounded Text Channel
-
--> Remove that role after X time
-
--> Send a message to user after he has been declared for having bad behaviour
-
--> Command to mute and unmute bad and good behaved users, respectively
-
--> Put Badbehaved users in Grounded Channel, voice.
-
-### To be Implemented By Yours Trully
-
--> custom help command
-
--> Command to randomly put a user in Grounded Channel
-
--> Having a badbehavior mode for the bot, just for giggles
-
--> Gamify The Bot
-
--> Permissions for certain commands
-
--> Parse file DatabaseHandler
-
--> Handle same name roles and channels
-
--> Rebuild Exception Handling process
-
--> Personalize message for badbehavioured users
 
 ## About Me
 
