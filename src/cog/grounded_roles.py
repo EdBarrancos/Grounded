@@ -77,6 +77,18 @@ helpMessageRR = "Receives an argument with the member's name and removes the gro
 briefMessageRR = "Who has been a good boy/girl?"
 
 
+#muteMembers
+nameMM = "muteM"
+aliasesMM = ("mm", "mM", "mute_member")
+helpMessageMM = "Mutes the members that have been badbehaving"
+
+
+#unmuteMembers
+nameUM = "unmuteM"
+aliasesUM = ("um", "uM", "unmute_members")
+helpMessageUM = "Unmute the members that have been badbehaving"
+
+
 
 class GrRoles(commands.Cog):
 
@@ -244,6 +256,41 @@ class GrRoles(commands.Cog):
             await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Unable to Remove Role from Member"))}')
             return
 
+    
+    @commands.command(name=nameMM, aliases=aliasesMM, help=helpMessageMM)
+    async def MuteMembers(self, ctx):
+        try:
+            members = await self.GetMembersWithGroundedRole(ctx.guild)
+        except:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Unable to get  Members"))}')
+            return
+
+        if members == None:
+            return
+
+        for member in members:
+            try:
+                await member.edit(mute = True)
+            except:
+                await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper(f"Unable to mute {member}"))}')
+
+
+    @commands.command(name=nameUM, aliases=aliasesUM, help=helpMessageUM)
+    async def UnmuteMembers(self, ctx):
+        try:
+            members = await self.GetMembersWithGroundedRole(ctx.guild)
+        except:
+            await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper("Unable to get  Members"))}')
+            return
+
+        if members == None:
+            return
+
+        for member in members:
+            try:
+                await member.edit(mute = False)
+            except:
+                await ctx.send(f'{self.wrapper.BackQuoteWrapper(self.wrapper.AllAngryWrapper(f"Unable to unmute {member}"))}')
 
 
     ##########################
@@ -255,14 +302,17 @@ class GrRoles(commands.Cog):
         try:
             roleId = await self.GetRoleId(guild)
         except:
-            return
+            return None
 
         if roleId == None:
-            return
+            return None
 
         role = guild.get_role(roleId)
+        if role == None:
+            return None
 
-        members_with_role = [x for x in guild.members if role in x.roles()]
+
+        members_with_role = [x for x in guild.members if role in x.roles]
         return members_with_role
 
 
@@ -293,6 +343,8 @@ class GrRoles(commands.Cog):
             raise RoleNotDefined()
 
         role = guild.get_role(roleId)
+
+        await member.edit(mute = False)
 
         if role not in member.roles:
             return

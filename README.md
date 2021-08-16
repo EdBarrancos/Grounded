@@ -68,11 +68,11 @@ Just make sure u find a cool nickname to identify your plans
 
 -> Send a message to user after he has been declared for having bad behaviour
 
+-> Command to mute and unmute bad and good behaved users, respectively
+
 ### To be Implemented By Yours Trully
 
 -> custom help command
-
--> Command to mute and unmute bad and good behaved users, respectively
 
 -> Put Badbehaved users in Grounded Channel, voice.
 
