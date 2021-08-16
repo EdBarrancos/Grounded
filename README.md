@@ -64,6 +64,10 @@ Just make sure u find a cool nickname to identify your plans
 
 ->  Allow access to Grounded Text Channel
 
+-> Remove that role after X time
+
+-> Send a message to user after he has been declared for having bad behaviour
+
 ### To be Implemented By Yours Trully
 
 -> custom help command
@@ -71,10 +75,6 @@ Just make sure u find a cool nickname to identify your plans
 -> Command to mute and unmute bad and good behaved users, respectively
 
 -> Put Badbehaved users in Grounded Channel, voice.
-
--> Remove that role after X time
-
--> Send a message to user after he has been declared for having bad behaviour
 
 -> Command to randomly put a user in Grounded Channel
 
@@ -89,6 +89,8 @@ Just make sure u find a cool nickname to identify your plans
 -> Handle same name roles and channels
 
 -> Rebuild Exception Handling process
+
+-> Personalize message for badbehavioured users
 
 ## About Me
 
